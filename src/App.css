@@ -1,0 +1,11 @@
+.App {
+  text-align: center;
+}
+
+.myrow{
+  border: 2px solid black;
+}
+td.mytd {
+  padding: 12px;
+  border-right: 2px solid red;
+}
