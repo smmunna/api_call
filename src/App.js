@@ -1,11 +1,13 @@
 import './App.css';
-import FetchData from './components/FetchData';
+// import FetchData from './components/FetchData';
+import UserList from './components/UserList';
 
 function App() {
   return (
     <div className="App">
     
-              <FetchData/>
+              {/* <FetchData/> */}
+              <UserList/>
      
     </div>
   );
