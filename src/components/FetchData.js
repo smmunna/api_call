@@ -1,55 +1,93 @@
-/* eslint-disable jsx-a11y/scope */
-import React,{useEffect,useState} from 'react'
-import axios from 'axios'
-import '../App.css'
+import React, { useEffect, useState } from "react";
+import "../App.css";
+import ReactPaginate from "react-paginate";
 
 function FetchData() {
-    const [post, setpost] = useState('');
-    useEffect(() => {
-       axios.get("https://jsonplaceholder.typicode.com/posts")
-       .then((response)=>{setpost(response.data)})
-    }, []);
+  const [items, setItems] = useState([]);
 
-    if(post.length === 0){
-        return <div> <h2>Loading.......!</h2></div>
-    }
+  const [pageCount, setpageCount] = useState(0);
 
-    else{
+  let limit = 10;
 
-  return (
-    <div>
-    
-   
-   <h2>Details</h2>
+  useEffect(() => {
+    const getComments = async () => {
+      const res = await fetch(
+        `https://jsonplaceholder.typicode.com/posts?_page=1&_limit=${limit}`
+      );
+      const data = await res.json();
+      const total = res.headers.get("x-total-count");
+      setpageCount(Math.ceil(total / limit));
+      setItems(data);
+    };
 
-   <table class="table table-bordered">
-    <tr className='myrow'>
-        <th scope="col">User ID</th>
-        <th scope="col">Title</th>
-        <th scope="col">Body</th>
-    </tr>
+    getComments();
+  }, [limit]);
 
+  const fetchComments = async (currentPage) => {
+    const res = await fetch(
+      `https://jsonplaceholder.typicode.com/posts?_page=${currentPage}&_limit=${limit}`
+    );
+    const data = await res.json();
+    return data;
+  };
 
-    {
-    post.map((value)=>{
-        return <tr className='myrow'>
+  const handlePageClick = async (data) => {
+    console.log(data.selected);
+    let currentPage = data.selected + 1;
+    const commentsFormServer = await fetchComments(currentPage);
+    setItems(commentsFormServer);
+  };
 
-            <td className='mytd' scope="row">{value.id}</td>
-            <td className='mytd'>{value.title}</td>
-            <td className='mytd'>{value.body}</td>
-            <td className='mytd'><button type="submit">Submit</button></td>
-
-        </tr>
-    })
-   }
-
-   </table>
-   
-
-    </div>
-  )
-
+  if (items.length === 0) {
+    return (
+      <div>
+        <h1>Loading......!</h1>
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <div className="paginate">
+          <ReactPaginate
+            previousLabel="< previous"
+            nextLabel="next >"
+            breakLabel="..."
+            pageCount={pageCount}
+            marginPagesDisplayed={3}
+            pageRangeDisplayed={3}
+            onPageChange={handlePageClick}
+            containerClassName={"pagination"}
+            pageClassName={"page-item"}
+            pageLinkClassName={"page-link"}
+            previousClassName={"page-item"}
+            nextClassName={"page-item"}
+            previousLinkClassName={"page-link"}
+            nextLinkClassName={"page-link"}
+            activeLinkClassName={"page-link"}
+            breakClassName={"page-item"}
+            breakLinkClassName={"page-link"}
+            activeClassName={"active"}
+          />
+        </div>
+        <table>
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Body</th>
+          </tr>
+          {items.map((value) => {
+            return (
+              <tr className="myrow">
+                <td className="mytd">{value.id}</td>
+                <td className="mytd">{value.title}</td>
+                <td className="mytd">{value.body}</td>
+              </tr>
+            );
+          })}
+        </table>
+      </div>
+    );
+  }
 }
-}
 
-export default FetchData
+export default FetchData;
