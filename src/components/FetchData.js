@@ -14,7 +14,7 @@ function FetchData() {
       const res = await fetch(
         `https://jsonplaceholder.typicode.com/posts?_page=1&_limit=${limit}`
       );
-      const data = await res.json();
+      let data = await res.json();
       const total = res.headers.get("x-total-count");
       setpageCount(Math.ceil(total / limit));
       setItems(data);
